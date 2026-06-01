@@ -412,21 +412,59 @@
 
     <script>
         function generateMockCaptcha() {
-            var canvas = document.createElement('canvas');
-            canvas.width = 120;
-            canvas.height = 40;
-            var ctx = canvas.getContext('2d');
+            try {
+                var canvas = document.createElement('canvas');
+                canvas.width = 120;
+                canvas.height = 40;
+                var ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = '#' + Math.floor(Math.random()*16777215).toString(16).padEnd(6, '0');
-            ctx.globalAlpha = 0.2;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.globalAlpha = 1.0;
+                // 畫背景
+                ctx.fillStyle = '#' + Math.floor(Math.random()*16777215).toString(16).padEnd(6, '0');
+                ctx.globalAlpha = 0.2;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1.0;
 
-            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            var code = '';
-            for (var i = 0; i < 5; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
+                // 產生驗證碼
+                var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var code = '';
+                for (var i = 0; i < 5; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+
+                // 畫文字
+                ctx.font = 'bold 28px Arial';
+                ctx.fillStyle = '#333333';
+                ctx.setTransform(1, Math.random()*0.2-0.1, Math.random()*0.2-0.1, 1, 0, 0);
+                ctx.fillText(code, 15, 30);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+                // 畫干擾線
+                for (var i = 0; i < 4; i++) {
+                    ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                    ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                    ctx.stroke();
+                }
+
+                // 直接用 ID 抓取圖片元素 (更精準)
+                var imgElement = document.getElementById('mockCaptchaImg');
+                if(imgElement) {
+                    imgElement.src = canvas.toDataURL("image/png");
+                    console.log("✅ 模擬驗證碼產生成功，答案是:", code);
+                } else {
+                    console.error("❌ 找不到 ID 為 mockCaptchaImg 的圖片標籤！");
+                }
+            } catch (e) {
+                console.error("❌ 生成驗證碼時發生錯誤:", e);
             }
+        }
 
-            ctx.font = 'bold 28px Arial';
-            ctx.fillStyle = '#33
+        // 不等 window.onload，只要網頁一解析到這裡就強制執行
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", generateMockCaptcha);
+        } else {
+            generateMockCaptcha();
+        }
+    </script>
