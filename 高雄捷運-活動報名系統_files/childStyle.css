@@ -1,0 +1,440 @@
+﻿@charset "utf-8";
+/*
+    #48466D
+    #3D84A8
+    #46CDCF
+    #ABEDD8  
+*/
+body {
+    font-size: 14pt;
+    color: #080a07fa;
+    background-color: #687c76;
+}
+
+h1 {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 10px 0;
+    line-height: 180%;
+    color: #ffffff;
+}
+
+h2 {
+    font-size: 150%;
+    font-weight: bold;
+    margin: 0;
+    line-height: 150%;
+    color: #007c29;
+}
+
+a {
+    color: #3D84A8;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: #46CDCF;
+        text-decoration: underline;
+    }
+
+
+.numLi li {
+    list-style: decimal;
+    padding-left: 10px;
+    margin-left: 25px;
+}
+
+    .numLi li ul li {
+        list-style: upper-latin;
+    }
+
+.logo {
+    margin: 30px auto;
+    width: 201px;
+}
+
+optgroup {
+    margin-left: 25px;
+    background: #ccc;
+    color: #666;
+}
+
+#MainTXT {
+    width: 70%;
+    min-width: 340px;
+    margin: 60px auto 30px;
+}
+
+.Maincon {
+    /*border: 1px double #fff;*/
+    border: 1px;
+    border-color: #869994;
+    border-style: double;
+    line-height: 200%;
+    padding: 0 20px;
+    border-radius: 60px;
+    background-color: #9db5ae;
+}
+
+#applyfrom li {
+    padding: 20px 15px;
+    border-bottom: 1px dashed #d0ffbc;
+    display: list-item;
+}
+
+#applyfrom div ul.noline li {
+    border: none;
+    margin-left: 20px;
+    padding: 0;
+    list-style: decimal;
+}
+
+#applyfrom li input {
+    border-radius: 5px;
+    border: 1px solid darkgray;
+    height: 30px;
+    padding-left: 10px;
+    font-family: 微軟正黑體;
+    font-size: 100%;
+    outline: none;
+    margin: 5px 0;
+    min-width: 20px;
+}
+
+#applyfrom li select {
+    padding: 3px;
+    margin-top: 4px;
+}
+
+#applyfrom li label {
+    width: 200px;
+    float: left;
+}
+
+#applyfrom li div {
+    min-width: 200px;
+    display: inline-block;
+    word-break: break-all;
+}
+
+    #applyfrom li div span, #applyfrom li .hint {
+        color: #810c75;
+        font-size: 85%;
+    }
+
+#applyfrom li div label {
+    float: none;
+    margin: 0 50px 0 10px;
+}
+
+#applyfrom input {
+    vertical-align: middle;
+}
+
+.borderTable {
+    border: 1px solid #ccc;
+    border-spacing: 0;
+    border-collapse: collapse;
+    padding: 0;
+}
+
+    .borderTable td, .borderTable th {
+        border: 1px solid #ccc;
+        padding: 2px 4px;
+    }
+
+.Loading {
+    position: absolute;
+    width: auto;
+    height: auto;
+    display: block;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+    z-index: 8010;
+    text-align: center;
+    padding-top: 60px;
+    background: url('../../include/fancybox/fancybox_overlay.png');
+}
+
+.loadIMG {
+    top: 50%;
+    left: 50%;
+}
+
+.IM {
+    /*background: url('../../images/RedStarKey_s.png') no-repeat 0px 25px;*/
+}
+
+.btn {
+    padding: 20px 0;
+}
+
+#applyfrom .divagree {
+    margin: 20px 0;
+}
+
+    #applyfrom .divagree ul {
+        padding: 0 20px;
+    }
+
+    #applyfrom .divagree li {
+        list-style: decimal;
+        padding: 0 0 0 15px;
+        border-bottom: none;
+    }
+
+    #applyfrom .divagree ul li ul {
+        padding: 0px;
+    }
+
+        #applyfrom .divagree ul li ul li {
+            list-style: none;
+            padding: 0px;
+        }
+
+            #applyfrom .divagree ul li ul li ul {
+                padding-left: 40px;
+            }
+
+    #applyfrom .divagree ul li li li {
+        list-style: upper-alpha;
+    }
+
+.agreeArea {
+    width: 90%;
+    height: 120px;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 0 10px;
+    margin: 5px 10px;
+}
+
+    .agreeArea h1 {
+        font-size: 16px;
+        line-height: 180%;
+        margin: 5px 0;
+    }
+
+    .agreeArea h2 {
+        font-size: 13px;
+        line-height: 180%;
+        margin: 2px 0;
+    }
+
+.needData {
+    background-color: #f9cfcf;
+    border: 1px solid red;
+}
+
+.hidden {
+    display: none;
+}
+
+#inline {
+    line-height: 170%;
+    margin: 0 auto;
+}
+
+    #inline ul {
+        padding: 0 20px;
+    }
+
+    #inline li {
+        list-style: decimal;
+        padding-left: 15px;
+    }
+
+    #inline ul li li {
+        list-style: upper-alpha;
+    }
+
+#message_txt {
+    color: red;
+    padding: 20px 30px;
+    margin: auto 0;
+}
+/********  Login **********/
+.loginDiv {
+    width: 40%;
+    min-width: 290px;
+    margin: 100px auto;
+    border: 7px double #ABEDD8;
+    padding: 10px 30px;
+    text-align: center;
+}
+
+    .loginDiv h1 {
+        font-size: 24px;
+        padding: 5px 0;
+    }
+
+    .loginDiv a:hover {
+        color: #ff8c00;
+    }
+
+    .loginDiv li {
+        list-style: disc;
+        font-size: 13px;
+        line-height: 160%;
+        margin-left: 10px;
+    }
+
+    .loginDiv div {
+        padding: 10px 0;
+    }
+
+    .loginDiv .button {
+        margin: 5px auto;
+        width: 200px;
+    }
+
+        .loginDiv .button input {
+            margin-left: 20px;
+            width: 60px;
+        }
+
+#errAccount, #errPWD, #lblErrMsg {
+    padding: 2px 0;
+    font-size: 10px;
+}
+/********  Login End **********/
+
+/********  Search **********/
+
+#SearchCon {
+    width: 70%;
+    min-width: 340px;
+    margin: 20px auto;
+    border: 4px solid #ABEDD8;
+    line-height: 200%;
+    padding: 0 20px;
+}
+
+.tableData {
+    margin: 0 auto;
+    padding: 10px;
+}
+
+    .tableData table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .tableData td {
+        border: 1px solid #ccc;
+        padding: 10px 10px;
+    }
+
+    .tableData th {
+        border: 1px solid #aaa;
+        background-color: #ccc;
+        font-size: 10px;
+        padding: 10px 10px;
+    }
+
+/********  Search End **********/
+
+
+/********  Button Start **********/
+
+.btn_darkBG {
+    -webkit-border-radius: 13;
+    -moz-border-radius: 13;
+    border-radius: 13px;
+    border: none;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 18px;
+    background: #7393A7;
+    padding: 8px 30px 8px 30px;
+    text-decoration: none;
+}
+
+    .btn_darkBG:hover {
+        background: #F6C667;
+        text-decoration: none;
+    }
+
+
+.btn_cleanBG {
+    border: none;
+    -webkit-border-radius: 13;
+    -moz-border-radius: 13;
+    border-radius: 13px;
+    font-family: Arial;
+    color: #6C737E;
+    font-size: 18px;
+    background: #B5CFD8;
+    padding: 8px 30px 8px 30px;
+    text-decoration: none;
+}
+
+    .btn_cleanBG:hover {
+        color: #E8ECF1;
+        background: #F6C667;
+        text-decoration: none;
+    }
+
+/********  Button End **********/
+
+
+
+#MainAdmission div div {
+    margin: 10px;
+}
+
+#MainAdmission input {
+    margin-right: 10px;
+}
+
+#MainAdmission h2 {
+    font-weight: bold;
+    font-size: 15px;
+    color: #00a078;
+}
+
+#MainAdmission input {
+    padding: 2px 5px;
+}
+
+.sort {
+    width: 30px;
+    text-align: center;
+}
+
+.childID {
+    width: 30px;
+}
+
+
+.num span {
+    color: #e04545;
+    font-weight: bold;
+}
+
+.gril {
+    margin: 10px 0;
+    padding: 5px 10px;
+    border: 1px #c64f4f solid;
+    background-color: #f9caca;
+    float: left;
+    width: 300px;
+    margin: 10px 20px;
+}
+
+.boy {
+    margin: 10px 0;
+    padding: 5px 10px;
+    border: 1px #4975aa solid;
+    background-color: #cee4ff;
+    float: left;
+    width: 300px;
+    margin: 10px 20px;
+}
+
+.noWaitClass {
+    color: #b24040;
+}
