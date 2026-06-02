@@ -491,4 +491,21 @@
         } else {
             generateMockCaptcha();
         }
+        // 補上遺失的尺寸解鎖函數
+window.getSizeNum = function() {
+    // 當這個函數被呼叫時，代表使用者已經點了性別或梯次
+    // 我們就把隱藏尺寸欄位的 CSS 遮罩拿掉，或是把它解鎖
+    var sizeDiv = document.getElementById("SizeDiv");
+    if (sizeDiv) {
+        // 如果原本是用 display:none 隱藏的，就讓它顯示
+        sizeDiv.style.display = "block"; 
+        
+        // 如果原本裡面的 input 被 disabled 了，就把 disabled 拿掉
+        var sizeInputs = sizeDiv.getElementsByTagName("input");
+        for (var i = 0; i < sizeInputs.length; i++) {
+            sizeInputs[i].removeAttribute("disabled");
+        }
+        console.log("🛠️ 尺寸欄位已正常解鎖！");
+    }
+};
     </script>
