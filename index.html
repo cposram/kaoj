@@ -1,455 +1,291 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" class="">
+<html lang="zh-TW">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=11;IE=10;">
-    <title>高xx運-活動報名系統</title>
-    
-    <link href="assets/childStyleV2.css" rel="stylesheet">
-    <script src="assets/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="assets/jquery-ui.css">
-    <script src="assets/jquery-ui_tw.js"></script>
-    <script type="text/javascript" src="assets/jquery.fancybox.js"></script>
-    <link rel="stylesheet" type="text/css" href="assets/jquery.fancybox.css" media="screen">
-
-    <script type="text/javascript">
-        $(function () {
-            $.extend($.datepicker, {
-                formatDate: function (format, date, settings) {
-                    var d = date.getDate();
-                    var m = date.getMonth() + 1;
-                    var y = date.getFullYear();
-                    var fm = function (v) {
-                        return (v < 10 ? '0' : '') + v;
-                    };
-                    if (y.toString().length > 3)
-                        return (y - 1911) + '/' + fm(m) + '/' + fm(d);
-                    else
-                        return (y) + '/' + fm(m) + '/' + fm(d);
-                },
-                parseDate: function (format, value, settings) {
-                    var v = new String(value);
-                    var Y, M, D;
-                    if (v.length == 7) {/*1001215*/
-                        Y = v.substring(0, 3) - 0 + 1911;
-                        M = v.substring(3, 5) - 0 - 1;
-                        D = v.substring(5, 7) - 0;
-                        return (new Date(Y, M, D));
-                    } else if (v.length == 6) {/*981215*/
-                        Y = v.substring(0, 2) - 0 + 1911;
-                        M = v.substring(2, 4) - 0 - 1;
-                        D = v.substring(4, 6) - 0;
-                        return (new Date(Y, M, D));
-                    }
-                    return (new Date());
-                },
-                formatYear: function (v) {
-                    return '民國' + (v - 1911) + '年';
-                }
-            });
-
-            $(".birthday").datepicker({
-                "dateFormat": "yy/mm/dd",
-                changeYear: true,
-                yearRange: "-80:+0",
-                monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-                monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"]
-
-            }).on("click", function () {
-                for (var i = 0; i < $(".ui-datepicker-year option").length; i++) {
-                    $(".ui-datepicker-year option")[i].text = $(".ui-datepicker-year option")[i].value - 1911
-                }
-            });
-
-            $("#single_2").fancybox({
-                openEffect: 'elastic',
-                closeEffect: 'elastic',
-                helpers: {
-                    title: {
-                        type: 'inside'
-                    }
-                }
-            });
-        })
-    </script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄捷運・活動報名系統 (自動化測試靶場完全體)</title>
     <style>
-        .hidden { display: none; }
-        #load {
-            text-align: center;
-            font-weight: bold;
-            font-size: 100%;
-            position: fixed;
-            background-color: #ffb0b0d6;
-            margin: 0;
-            padding: 5px;
-            top: 0;
-            width: 100%;
-            left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
-        #load span {
-            color: #ff0000;
-            padding: 0 10px;
-            font-size: 200%;
-        }
-        #applyfrom li.data2 li label {
-            width: 250px;
-        }
+        body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        h2 { color: #5a7d9a; border-bottom: 2px solid #5a7d9a; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #444; }
+        .form-group input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .radio-group { margin-top: 5px; }
+        .radio-group label { display: inline-block; margin-right: 15px; font-weight: normal; cursor: pointer; }
+        .captcha-box { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        #mock_captcha { font-weight: bold; font-size: 20px; background: #e0e0e0; padding: 5px 15px; letter-spacing: 3px; font-style: italic; user-select: none; }
+        .btn-submit { background-color: #5a7d9a; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-submit:hover { background-color: #48657c; }
+        
+        /* FancyBox 遮罩與彈窗樣式 */
+        #fancybox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
+        #fancybox-content { background: #fff; padding: 25px; border-radius: 6px; width: 480px; max-width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        #fancybox-dynamic-list { list-style: none; padding: 0; margin: 15px 0; font-size: 14px; color: #444; line-height: 1.8; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .fancy-btns { text-align: right; margin-top: 15px; }
+        .fancy-btns input[type="button"] { margin: 3px; padding: 5px 15px; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; }
+        #fancyConfirm_ok { background: #5a7d9a; color: #fff; border-color: #5a7d9a; }
+        
+        /* 成功畫面樣式 */
+        #success-screen { display: none; max-width: 800px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .success-title { color: #5a7d9a; margin-top: 0; border-bottom: 2px solid #5a7d9a; padding-bottom: 10px; font-size: 20px; }
     </style>
-    <style type="text/css">.fancybox-margin{margin-right:15px;}</style>
 </head>
 <body>
-    <form method="post" action="https://activity.krtc.com.tw/Page/childactapply/applypage.aspx?aid=7312C66B32555A33" id="form1">
-        
-        <div class="aspNetHidden">
-            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="xy4aSHpNjSiNfc+aWlqkWgDXSjUYZbozIICh9XdP2wVfilx8OQzBkdlHAoJV4o7nQaDj90Pa1yC6KH03LaKmIkTVqIkedr34v8MTRbnhryresZ6Il6nGTzega07HFNmLTa+cxlIrEn9+9YGYRVMR4bDml2RaGKr8ScAZFKPR2ewtpira2eGmdpFgl4jjeE6fYm2zY0YA4NEN/5KJIWW+0MDcppMAFwOvOnOm2BrOYpgs4SmVTHvng+Vk2sGTsjFUlfifA9/JYfY1lkscv8ykcCtMIbvI10laDaj+VfADc2OiSyu8drm+oSL7yC85anDkfzZ6sYlnRwPND25dMJakEZTJJRQUJGxZTHyPaOoQcRmAFoMtstozD0ebALEzq1Od8cDsXAzbbgc7GswNfG8l/0IjbvR6ayQ4P0tNbMBRLVVYbupjy5Mczt0l8+c+AvIIQ7xHVtJQMZeLDgBRj90URFJ+iv/r1XqSQFxxO2zx/oY05gGG0bj7eNd/BHQq1RWNlDAwfQVB8HBlHzuUYcQfx/or9OHd+RXUyHbDay0h+sVxcOmVErw0UoWBp7DqSFKmRVurP2zl1QrLAagrxUgHFGCzUql5h+wYUq1yIfA2V6uKEPipaaD6RvjoBN+NnuaxDml0lvOXaYzKBDIImC5ePKbuPhGlwvAr8VDlgyPrhGfem52rvUg1G67SBFozpI5sLlMt7bRasYDQu4zKzfPbNhbw2lFhLG3C1IJycFIAtf8VikOjzCvREEBmLsZn00N0eMNyzO9196NB2cWcXOrRNkJk1olaqjF2kSIeZ9RQHraHcm2z1XxaI8wrBuYI5DfPEXNbP3Nb/9n+UDIRe8fFlYtmgk1k9+shS8OIqFm1KxjCrqssBnVXbULuI+j1XX0+DmvxEFOV5Z+gr5Pzlrz3r5YGpjV5mptfhtXV5wWB4kWgQqP8fq3XnAbDb9kyYzuk">
-        </div>
-        <div class="aspNetHidden">
-            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="2DA86181">
-            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="Nd83daAgoxrOyeFZfk77WRzooDLuPp/i9b3+cnXoKei4Xy1UOuXv6M1dWvMvS4SaFoxfwogQ440cgXPDS2lFv/gkmow8kqHqbBgZEM0xDcY3JWfTvdfDAJB4jsiQFpjTqeyY4jWG55jX1Y/CdeBjfkXp2GlGV/ago+FTfbt623btuey4FfyNPkCSRcKdxQM4HP5kp0F501t2UsbSXnbuXhHaXhb0CwCvSTAk3GvdldrJqANGVWoI4hBeu8v6BLw54RuOhRQ0xPoCShRNpkQqKAJh7lqoPhbV7fhVG2qSHnCQrVIdIyuONeDipEs8Q3FO+tByFFfT/y5gnRjITUskTcwZE6grBUFQIOUdrymjrCrdnKOT1r/b7urTxFRI76hpbtwkGXJqMA4oUwxncnPdf/Ml92XBMCCibs2Zp47euu4PlWHQe4E+BEHH/8UpRvYRUhO7nMpt10ZC544LCuOeRiKptgzYJqm957HMt5eArOkon6h1zwj0BP5scT+YkIwLRH9LkwclEQnsYvS1nrTI0uidnt2Jz+7lNAcoU+1fWv9qt8frqyL2UmoU+J9fjJmJBlpNwcoQOeN1CQ/Y9kzE+VSOQ4+EcKB4vpNKOj2nbrFwIN0R9zbHGBrrc6BiNZOv3o+O+7St4SbtpuKP5cSLTgSTJnMrVOF8t/dxl/A3WM0=">
-        </div>
 
-        <div style="display: flex; flex-direction: column; min-height: 100vh;">
-            <header style="margin-top: 50px;">
-                <div class="logo-dot"></div>
-                <span class="logo-text">高雄捷運・活動報名系統</span>
-            </header>
-            
-            <main>
-                <div id="MainTXT">
-                    <div id="load">請於<span id="stime">123</span>秒內完成報名作業。</div>
+<div class="container" id="main-form-container">
+    <h2>2026年8月份高雄捷運「小小站長體驗營」活動報名系統</h2>
+    
+    <form id="form1" onsubmit="return false;">
+        <input type="hidden" id="TXTcActID" name="TXTcActID" value="27">
+        <input type="hidden" id="ageS" name="ageS" value="4">
+        <input type="hidden" id="ageE" name="ageE" value="8">
+        <input type="hidden" id="checkPB" name="checkPB" value="0">
 
-                    <div id="MainCon" class="Maincon">
-                        <div id="MSG" class="FontRed txtC borderR" style="max-width: 600px; text-align: left; margin: 40px auto;"></div>
-
-                        <div class="hero">
-                            <h1><span id="ActName">2026年7月份高雄捷運「小小站長體驗營」活動報名表</span></h1>
-                            <p>高雄捷運公司為辦理活動及保險所需，請依報名表填寫相關資料，活動及保險涉及蒐集個資問題，請務必審閱活動網頁提供之高雄捷運公司/保險公司「蒐集處理及利用個人資料告知事項」，感謝配合。</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">活動資訊</div>
-                            <div class="field">
-                                <label class="field-label">活動梯次</label>
-                                <div id="ActConDiv" class="radio-group">
-                                    <input name="TXTcActID" type="text" value="27" readonly="readonly" id="TXTcActID" class="hidden">
-                                    <span id="selectActCon" class="radio-group">
-                                        <input id="selectActCon_0" type="radio" name="selectActCon" value="1"><label for="selectActCon_0">7月14日(二)</label><br>
-                                        <input id="selectActCon_1" type="radio" name="selectActCon" value="2"><label for="selectActCon_1">7月23日(四)</label>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">小朋友資料</div>
-
-                            <div class="field-grid" style="margin-bottom: 24px">
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="child-name">小朋友姓名</label>
-                                    <input name="stName" type="text" id="stName" maxlength="25" placeholder="高小穹">
-                                </div>
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label">性別</label>
-                                    <div id="stSexDiv">
-                                        <span id="Sex" class="radio-group">
-                                            <input id="Sex_0" type="radio" name="Sex" value="M"><label for="Sex_0">小男生</label><br>
-                                            <input id="Sex_1" type="radio" name="Sex" value="F"><label for="Sex_1">小女生</label>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label class="field-label">身份證字號</label>
-                                <div class="id-type-group">
-                                    <span id="numDIV" class="radio-group">
-                                        <input id="NumType1" type="radio" name="NumType" value="1"><label for="NumType1">身份證字號</label>
-                                        <input id="NumType2" type="radio" name="NumType" value="2"><label for="NumType2">居留證號碼或護照號</label>
-                                    </span>
-                                </div>
-                                <input name="stNumber" type="text" id="stNumber" maxlength="50" placeholder="">
-                            </div>
-
-                            <div class="field">
-                                <label class="field-label" for="dob">出生年月日</label>
-                                <input name="stBirth" type="text" id="stBirth" class="birthday hasDatepicker" placeholder="105/01/01">
-                                <p class="field-note">格式：105/01/01</p>
-                                <p class="field-note warn">
-                                    <span>年齡限制為:4至8歲。(107~111年間出生者)(年齡以報名時間計算)</span>
-                                    <input name="ageS" type="text" value="4" id="ageS" class="hidden" style="width:20px;">
-                                    <input name="ageE" type="text" value="8" id="ageE" class="hidden" style="width:20px;">
-                                </p>
-                            </div>
-
-                            <div class="field">
-                                <label class="field-label">迷你制服尺寸</label>
-                                <div class="radio-group" style="margin-bottom: 14px">
-                                    <div id="SizeDiv">
-                                        <span id="Size" class="radio-group">
-                                            <input id="Size_0" type="radio" name="Size" value="S"><label for="Size_0">S</label><br>
-                                            <input id="Size_1" type="radio" name="Size" value="M"><label for="Size_1">M</label><br>
-                                            <input id="Size_2" type="radio" name="Size" value="L"><label for="Size_2">L</label>
-                                        </span>
-                                    </div>
-                                </div>
-                                <span class="size-ref-label">迷你制服尺寸參照表</span>
-                                <div class="size-table">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>參考尺寸</th><th>S</th><th>M</th><th>L</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>身高（公分）</td><td>100–115</td><td>110–125</td><td>120–135</td>
-                                            </tr>
-                                            <tr>
-                                                <td>胸圍（英吋）</td><td>25–28</td><td>28–31</td><td>31–33</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">家長資料</div>
-                            <div class="field-grid" style="margin-bottom: 24px">
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="parent-name">家長姓名</label>
-                                    <input name="fName" type="text" id="fName" maxlength="25" placeholder="高大穹">
-                                </div>
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="relation">關係</label>
-                                    <input name="fRelation" type="text" id="fRelation" maxlength="25" placeholder="父子">
-                                </div>
-                            </div>
-                            
-                            <div class="field">
-                                <label class="field-label" for="phone">家長聯絡電話</label>
-                                <input name="fPhone" type="text" id="fPhone" maxlength="100" placeholder="0987654321"><br>
-                                <p class="field-note">格式：0912345678</p>
-                            </div>
-
-                            <div class="field">
-                                <label class="field-label" for="email">家長聯絡電子郵件</label>
-                                <input name="fMail" type="text" id="fMail" maxlength="150" size="25" placeholder="abcd@krtc.com.tw">
-                            </div>
-
-                            <div id="Li1" class="field">
-                                <label class="field-label" for="email"><span id="cActnote"></span></label>
-                            </div>
-                        </div>
-
-                        <div class="legal-box">
-                            <div class="legal-box-header">
-                                <span class="legal-box-title">法定代理人資料</span>
-                                <input type="button" class="btn-autofill" onclick="copyFdata()" value="資料同上方家長">
-                            </div>
-                            <div class="field-note" style="margin-bottom: 20px;">
-                                因保險關係需提供法定代理人資料
-                            </div>
-                            <div class="field-grid" style="margin-bottom: 20px">
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="legal-name">法定代理人姓名</label>
-                                    <input name="lName" type="text" id="lName" maxlength="25" placeholder="">
-                                </div>
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="legal-relation">關係</label>
-                                    <input name="lRelation" type="text" id="lRelation" maxlength="25" placeholder="">
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="field-label" for="legal-phone">法定代理人電話</label>
-                                <input name="lPhone" type="text" id="lPhone" maxlength="25" placeholder="0912345678">
-                                <p class="field-note">格式：0912345678</p>
-                            </div>
-                            <div class="field-grid" style="margin-bottom: 0">
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="legal-dob">法定代理人出生年月日</label>
-                                    <input name="lBirth" type="text" id="lBirth" class="birthday hasDatepicker" maxlength="25" placeholder="">
-                                    <p class="field-note">格式：78/01/01</p>
-                                </div>
-                                <div class="field" style="margin-bottom: 0">
-                                    <label class="field-label" for="legal-id">法定代理人身份證字號</label>
-                                    <input name="lNumid" type="text" id="lNumid" maxlength="25" placeholder="">
-                                    <p class="field-note">若無身份證，請填寫居留證號碼或護照號碼</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="consent-row">
-                                <input type="checkbox" id="agree01_cb" value="ok" style="width: 1.5em; height: 1.5em; vertical-align: middle;">
-                                <label for="agree01_cb">本人已同意本活動的各項規定與個資法告知事項。</label>
-                            </div>
-
-                            <div class="captcha-row">
-                                <div>
-                                    <img src="" alt="驗證碼" name="imgCode" id="mockCaptchaImg" style="vertical-align: bottom;">
-                                    <input type="button" class="captcha-refresh" onclick="generateMockCaptcha()" title="重新整理驗證碼" value="↻" style="width: 40px;">
-                                    <input name="txt_input" type="text" id="txt_input"><span id="span_result" class="FontRed txtS"></span>
-                                </div>
-                            </div>
-
-                            <div class="submit-row">
-                                <input type="button" id="DataSend" class="btn-submit" value="送出" onclick="Vaildation();">
-                                <input type="button" value="清除" class="btn-clear" onclick="allclear();">
-                            </div>
-                        </div>
-
-                        <div id="applyfrom"></div>
-                    </div>
-                </div>
-                <p>&nbsp;</p>
-            </main>
-            
-            <footer>
-                請使用瀏覽器版本：Internet Explorer Edge 以上・Google Chrome・Firefox・Safari 最新版本瀏覽器
-            </footer>
-
-            <div id="message" style="display: none; width: 300px;">
-                <div id="message_txt"></div>
+        <div class="form-group">
+            <label>活動梯次</label>
+            <div class="radio-group">
+                <label><input type="radio" id="selectActCon_0" name="selectActCon" value="1" checked> 7月14日(二)</label>
+                <label><input type="radio" id="selectActCon_1" name="selectActCon" value="2"> 7月23日(四)</label>
             </div>
-            <input name="checkPB" type="text" id="checkPB" value="0" style="display: none;">
         </div>
+
+        <div class="form-group">
+            <label for="stName">小朋友姓名</label>
+            <input type="text" id="stName" name="stName" value="姚廉承">
+        </div>
+
+        <div class="form-group">
+            <label>性別</label>
+            <div class="radio-group">
+                <label><input type="radio" id="Sex_0" name="Sex" value="M" checked> 小男生</label>
+                <label><input type="radio" id="Sex_1" name="Sex" value="F"> 小女生</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>證件類型</label>
+            <div class="radio-group">
+                <label><input type="radio" id="NumType1" name="NumType" value="1" checked> 身份證字號</label>
+                <label><input type="radio" id="NumType2" name="NumType" value="2"> 居留證號碼或護照號</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="stNumber">身份證字號</label>
+            <input type="text" id="stNumber" name="stNumber" value="N127873018">
+        </div>
+
+        <div class="form-group">
+            <label for="stBirth">出生年月日 (格式：105/01/01)</label>
+            <input type="text" id="stBirth" name="stBirth" value="109/04/04">
+        </div>
+
+        <div class="form-group">
+            <label>迷你制服尺寸</label>
+            <div class="radio-group">
+                <label><input type="radio" id="Size_0" name="Size" value="S"> S (額滿)</label>
+                <label><input type="radio" id="Size_1" name="Size" value="M"> M (額滿)</label>
+                <label><input type="radio" id="Size_2" name="Size" value="L" checked> L (模擬可用)</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="fName">家長姓名</label>
+            <input type="text" id="fName" name="fName" value="李熅舲">
+        </div>
+
+        <div class="form-group">
+            <label for="fRelation">關係</label>
+            <input type="text" id="fRelation" name="fRelation" value="母子">
+        </div>
+
+        <div class="form-group">
+            <label for="fPhone">家長聯絡電話</label>
+            <input type="text" id="fPhone" name="fPhone" value="0919208200">
+        </div>
+
+        <div class="form-group">
+            <label for="fMail">家長聯絡電子郵件</label>
+            <input type="text" id="fMail" name="fMail" value="iamhappybeatrice@gmail.com">
+        </div>
+
+        <div class="form-group">
+            <label for="lName">法定代理人姓名</label>
+            <input type="text" id="lName" name="lName" value="李熅舲">
+        </div>
+
+        <div class="form-group">
+            <label for="lRelation">關係</label>
+            <input type="text" id="lRelation" name="lRelation" value="母子">
+        </div>
+
+        <div class="form-group">
+            <label for="lPhone">法定代理人電話</label>
+            <input type="text" id="lPhone" name="lPhone" value="0919208200">
+        </div>
+
+        <div class="form-group">
+            <label for="lBirth">法定代理人出生年月日</label>
+            <input type="text" id="lBirth" name="lBirth" value="79/09/24">
+        </div>
+
+        <div class="form-group">
+            <label for="lNumid">法定代理人身份證字號</label>
+            <input type="text" id="lNumid" name="lNumid" value="N224997120">
+        </div>
+
+        <div class="form-group">
+            <label style="display: inline-flex; align-items: center; font-weight: normal; cursor: pointer;">
+                <input type="checkbox" id="agree01_cb" value="ok" checked style="margin-right: 8px;">
+                本人已同意本活動的各項規定與個資法告知事項。
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="txt_input">請輸入驗證碼</label>
+            <div class="captcha-box">
+                <span id="mock_captcha">ABCD</span>
+                <input type="text" id="txt_input" placeholder="不分大小寫" style="width: 120px; padding: 6px;">
+                <span id="span_result" style="color: red; font-weight: bold;"></span>
+            </div>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="Vaildation();">確認送出</button>
     </form>
+</div>
 
-    <script src="assets/childApply.js"></script>
+<div id="fancybox-overlay">
+    <div id="fancybox-content">
+        <p style="font-size: 15px; color: #333; margin-bottom: 12px; font-weight: bold;">請確認以下資料是否正確，資料送出後將無法修改，確認後請點選送出。</p>
+        
+        <ul id="fancybox-dynamic-list"></ul>
+        
+        <div class="fancy-btns">
+            <input id="fancyConfirm_cancel" type="button" value="取消">
+            <input id="fancyConfirm_ok" type="button" value="送出">
+        </div>
+    </div>
+</div>
 
-    <script>
-        $(function () {
-            var getUrlString = location.href;
-            var url = new URL(getUrlString);
-            var aid = url.searchParams.get('aid');
+<div id="success-screen">
+    <h3 class="success-title">— 訊息</h3>
+    <p style="color: #444; line-height: 1.8; margin-top: 20px; font-size: 15px;">
+        感謝您的熱情參與，我們已經收到您報名的表單。錄取依據請參考活動說明。後續將會在高雄捷運官網(<a href="https://www.krtc.com.tw/" target="_blank" style="color: #0056b3; text-decoration: none;">https://www.krtc.com.tw/</a>)公告各梯次錄取名單及繳費方式。
+    </p>
+</div>
 
-            if ($("#fName").val() != undefined) {
-                LTime(180, "stime", aid);
-            } else {
-                $("#load").hide();
-            }
-            $("#checkPB").val("0");
-            
-            $('input:radio[name="Sex"]').on("click", function () {
-                getSizeNum();
-            });
-            $('input:radio[name="selectActCon"]').on("click", function () {
-                getSizeNum();
-            });
-        })
-
-        function copyFdata() {
-            $("#lName").val($("#fName").val());
-            $("#lRelation").val($("#fRelation").val());
-            $("#lPhone").val($("#fPhone").val());
+<script>
+    // 自動生成隨機驗證碼
+    window.currentMockCode = "";
+    function generateMockCaptcha() {
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var code = "";
+        for (var i = 0; i < 4; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-    </script>
+        window.currentMockCode = code;
+        document.getElementById("mock_captcha").innerText = code;
+    }
+    generateMockCaptcha(); // 頁面載入時初始化
 
-    <script>
-        // 宣告一個全域變數來儲存當前的正確驗證碼
-        window.currentMockCode = "";
+    // 🌟 核心送出驗證邏輯
+    window.Vaildation = function() {
+        var userInput = document.getElementById("txt_input").value;
+        var span = document.getElementById("span_result");
+        var agreeCb = document.getElementById("agree01_cb");
 
-        function generateMockCaptcha() {
-            try {
-                var canvas = document.createElement('canvas');
-                canvas.width = 120;
-                canvas.height = 40;
-                var ctx = canvas.getContext('2d');
-
-                ctx.fillStyle = '#' + Math.floor(Math.random()*16777215).toString(16).padEnd(6, '0');
-                ctx.globalAlpha = 0.2;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.globalAlpha = 1.0;
-
-                var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                var code = '';
-                for (var i = 0; i < 5; i++) {
-                    code += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                
-                // 儲存答案供後續比對
-                window.currentMockCode = code;
-
-                ctx.font = 'bold 28px Arial';
-                ctx.fillStyle = '#333333';
-                ctx.setTransform(1, Math.random()*0.2-0.1, Math.random()*0.2-0.1, 1, 0, 0);
-                ctx.fillText(code, 15, 30);
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-                for (var i = 0; i < 4; i++) {
-                    ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-                    ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-                    ctx.stroke();
-                }
-
-                var imgElement = document.getElementById('mockCaptchaImg');
-                if(imgElement) {
-                    imgElement.src = canvas.toDataURL("image/png");
-                    console.log("✅ 模擬驗證碼產生成功，答案是:", code);
-                }
-                
-                // 清空之前的錯誤訊息與輸入框
-                var span = document.getElementById("span_result");
-                if (span) span.innerText = "";
-                
-            } catch (e) {
-                console.error("❌ 生成驗證碼時發生錯誤:", e);
-            }
+        // 狀況 A：如果未勾選同意條款 -> 觸發前端阻擋 Alert
+        if (!agreeCb || !agreeCb.checked) {
+            alert("請確認您的欄位是否填寫正確。");
+            return;
         }
-
-        // 🌟 覆寫原本高捷的送出驗證邏輯
-        window.Vaildation = function() {
-            var userInput = document.getElementById("txt_input").value;
-            var span = document.getElementById("span_result");
+        
+        // 狀況 B：檢查驗證碼
+        if (userInput.toUpperCase() === window.currentMockCode.toUpperCase()) {
+            if (span) span.innerText = "";
             
-            // 將使用者輸入轉為大寫後進行比對
-            if (userInput.toUpperCase() === window.currentMockCode.toUpperCase()) {
-                if (span) span.innerText = "";
-                // 模擬真實系統的確認視窗 (您的 Python 腳本會捕捉到這個並點擊確定)
-                alert("請確認您的欄位是否填寫正確。");
-                console.log("🎉 驗證成功，流程結束！");
-            } else {
-                // 模擬驗證碼打錯的情況
-                if (span) span.innerText = "驗證碼錯誤";
-                alert("驗證碼錯誤");
-                // 打錯時自動刷新驗證碼
-                generateMockCaptcha();
-                document.getElementById("txt_input").value = "";
-            }
-        };
-
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", generateMockCaptcha);
+            // 🎯 驗證碼正確，開始動態抓取欄位數值塞入 FancyBox
+            renderFancyBoxData();
+            
+            // 顯示 FancyBox 彈出視窗
+            document.getElementById("fancybox-overlay").style.display = "flex";
+            console.log("✅ 驗證過關！成功顯示動態 FancyBox 視窗。");
+            
         } else {
+            // 驗證碼錯誤
+            if (span) span.innerText = "驗證碼錯誤";
+            alert("驗證碼錯誤");
             generateMockCaptcha();
+            document.getElementById("txt_input").value = "";
+        }
+    };
+
+    // 🌟 動態抓取網頁資料並生成 FancyBox 清單的函式
+    function renderFancyBoxData() {
+        var ul = document.getElementById("fancybox-dynamic-list");
+        ul.innerHTML = ""; // 清空舊資料
+        
+        // 1. 抓取 Radio 選項文字的輔助函式
+        function getRadioText(name) {
+            var radios = document.getElementsByName(name);
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return radios[i].parentElement.textContent.trim();
+                }
+            }
+            return "未選擇";
         }
 
-        // 補上尺寸解鎖函數
-        window.getSizeNum = function() {
-            // 當這個函數被呼叫時，代表使用者已經點了性別或梯次
-            // 我們就把隱藏尺寸欄位的 CSS 遮罩拿掉，或是把它解鎖
-            var sizeDiv = document.getElementById("SizeDiv");
-            if (sizeDiv) {
-                sizeDiv.style.display = "block"; 
-                
-                var sizeInputs = sizeDiv.getElementsByTagName("input");
-                for (var i = 0; i < sizeInputs.length; i++) {
-                    sizeInputs[i].removeAttribute("disabled");
-                }
-                console.log("🛠️ 尺寸欄位已正常解鎖！");
-            }
-        };
-    </script>
+        // 2. 抓取 Input 數值的輔助函式
+        function getInputValue(id) {
+            var el = document.getElementById(id);
+            return el ? el.value.trim() : "未填寫";
+        }
+
+        // 3. 定義與你的截圖完全吻合的展示對照組
+        var displayItems = [
+            { label: "活動梯次", value: getRadioText("selectActCon") },
+            { label: "小朋友姓名", value: getInputValue("stName") },
+            { label: "性別", value: getRadioText("Sex") },
+            { label: "身份證字號", value: getInputValue("stNumber") },
+            { label: "出生年月日", value: getInputValue("stBirth") },
+            { label: "迷你制服尺寸", value: getRadioText("Size") },
+            { label: "家長姓名", value: getInputValue("fName") },
+            { label: "關係", value: getInputValue("fRelation") },
+            { label: "家長聯絡電話", value: getInputValue("fPhone") },
+            { label: "家長聯絡電子郵件", value: getInputValue("fMail") },
+            { label: "法定代理人姓名", value: getInputValue("lName") },
+            { label: "法定代理人關係", value: getInputValue("lRelation") },
+            { label: "法定代理人電話", value: getInputValue("lPhone") },
+            { label: "法定代理人出生年月日", value: getInputValue("lBirth") },
+            { label: "法定代理人身份證字號", value: getInputValue("lNumid") }
+        ];
+
+        // 4. 用迴圈將動態資料建立為 <li> 節點放入網頁
+        displayItems.forEach(function(item) {
+            var li = document.createElement("li");
+            li.innerHTML = `<strong>${item.label}：</strong>${item.value}`;
+            ul.appendChild(li);
+        });
+    }
+
+    // 🌟 綁定 FancyBox 按鈕事件
+    document.addEventListener("DOMContentLoaded", function() {
+        // 取消按鈕：隱藏彈窗
+        document.getElementById("fancyConfirm_cancel").addEventListener("click", function() {
+            document.getElementById("fancybox-overlay").style.display = "none";
+        });
+        
+        // 送出按鈕：隱藏表單，秀出最終成功提示
+        document.getElementById("fancyConfirm_ok").addEventListener("click", function() {
+            document.getElementById("fancybox-overlay").style.display = "none";
+            document.getElementById("main-form-container").style.display = "none";
+            document.getElementById("success-screen").style.display = "block";
+            console.log("🎉🎉 成功接收到最終送出指令！測試完美結束。");
+        });
+    });
+</script>
+
 </body>
 </html>
