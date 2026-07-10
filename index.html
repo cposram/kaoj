@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高雄捷運・活動報名系統 (自動化測試靶場完全體)</title>
+    <title>高雄捷運・活動報名系統</title>
     <style>
         /* ========================================== */
         /* 🎨 完美復刻原版 UI 樣式設定 */
@@ -242,9 +242,9 @@
                 <div class="form-group full-width">
                     <label>迷你制服尺寸</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" id="Size_0" name="Size" value="S"> S (額滿)</label>
-                        <label class="radio-label"><input type="radio" id="Size_1" name="Size" value="M"> M (額滿)</label>
-                        <label class="radio-label"><input type="radio" id="Size_2" name="Size" value="L"> L (模擬可用)</label>
+                        <label class="radio-label"><input type="radio" id="Size_0" name="Size" value="S"> S </label>
+                        <label class="radio-label"><input type="radio" id="Size_1" name="Size" value="M"> M </label>
+                        <label class="radio-label"><input type="radio" id="Size_2" name="Size" value="L"> L </label>
                     </div>
                 </div>
             </div>
@@ -349,9 +349,9 @@
     // 自動生成隨機驗證碼
     window.currentMockCode = "";
     function generateMockCaptcha() {
-        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
         var code = "";
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 5; i++) {
             code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         window.currentMockCode = code;
