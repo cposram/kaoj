@@ -411,20 +411,24 @@
 
 <script>
     // --- [1] Firebase 核心配置與初始化 ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyBQr_3o913vgaWUg4PAuequLEVE1mZFS7M",
-        authDomain: "cowgame-48dd8.firebaseapp.com",
-        databaseURL: "https://cowgame-48dd8-default-rtdb.firebaseio.com",
-        projectId: "cowgame-48dd8",
-        storageBucket: "cowgame-48dd8.firebasestorage.app",
-        messagingSenderId: "957972615393",
-        appId: "1:957972615393:web:14fd2ebb956a6c48ade7a0"
-    };
+    // --- [1] Firebase 核心配置與初始化 ---
+const firebaseConfig = {
+    apiKey: "AIzaSyDb_d1pPnmQ-VDWz7UxhH0NEG5Z6eviPpg",
+    authDomain: "checha-a71c7.firebaseapp.com",
+    // 🚨 注意：新版後台可能沒顯示這行，但舊版 SDK 必須加上 databaseURL 才能連到即時資料庫！
+    // 如果你在建立資料庫時選的不是美國地區（例如選了比利時或新加坡），請去 Firebase 後台的 Realtime Database 頁面抄取正確的網址替換
+    databaseURL: "https://checha-a71c7-default-rtdb.firebaseio.com", 
+    projectId: "checha-a71c7",
+    storageBucket: "checha-a71c7.firebasestorage.app",
+    messagingSenderId: "963012398978",
+    appId: "1:963012398978:web:27d21424454844c8cbc99b",
+    measurementId: "G-WCK28F33HC"
+};
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
 
     // --- [2] 倒數計時器邏輯 ---
     let timeLeft = 120;
